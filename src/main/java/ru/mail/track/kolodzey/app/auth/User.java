@@ -5,5 +5,5 @@ package ru.mail.track.kolodzey.app.auth;
  */
 public interface User {
     public String getLogin();
-    public boolean checkPassword(String password);
+    public boolean passwordIsCorrect(String password);
 }
