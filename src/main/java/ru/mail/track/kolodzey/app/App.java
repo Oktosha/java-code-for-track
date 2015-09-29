@@ -1,8 +1,11 @@
 package ru.mail.track.kolodzey.app;
 
-import ru.mail.track.kolodzey.app.auth.AuthenticationSystemImpl;
+import ru.mail.track.kolodzey.app.auth.*;
 import ru.mail.track.kolodzey.app.ui.ConsoleAuthenticationUI;
 import ru.mail.track.kolodzey.app.ui.UserInterface;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Hello world!
@@ -11,7 +14,10 @@ import ru.mail.track.kolodzey.app.ui.UserInterface;
 public class App 
 {
     public static void main( String[] args ) {
-        UserInterface ui = new ConsoleAuthenticationUI(new AuthenticationSystemImpl());
+        Map<String, User> userMap = new HashMap<>();
+        userMap.put("daria", new UserImpl("daria", "111"));
+        UserDB userDB = new UserDBImpl(userMap, new UserFactoryImpl());
+        UserInterface ui = new ConsoleAuthenticationUI(new AuthenticationSystemImpl(userDB));
         ui.run();
     }
 }
