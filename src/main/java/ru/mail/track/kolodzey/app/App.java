@@ -1,5 +1,6 @@
 package ru.mail.track.kolodzey.app;
 
+import ru.mail.track.kolodzey.app.auth.AuthenticationSystemImpl;
 import ru.mail.track.kolodzey.app.ui.ConsoleAuthenticationUI;
 import ru.mail.track.kolodzey.app.ui.UserInterface;
 
@@ -10,7 +11,7 @@ import ru.mail.track.kolodzey.app.ui.UserInterface;
 public class App 
 {
     public static void main( String[] args ) {
-        UserInterface ui = new ConsoleAuthenticationUI();
+        UserInterface ui = new ConsoleAuthenticationUI(new AuthenticationSystemImpl());
         ui.run();
     }
 }
