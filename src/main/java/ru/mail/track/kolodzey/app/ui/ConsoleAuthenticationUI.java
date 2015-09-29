@@ -1,6 +1,9 @@
 package ru.mail.track.kolodzey.app.ui;
 
 import ru.mail.track.kolodzey.app.auth.AuthenticationSystem;
+import ru.mail.track.kolodzey.app.auth.InvalidPasswordException;
+import ru.mail.track.kolodzey.app.auth.UserAlreadyExistsException;
+import ru.mail.track.kolodzey.app.auth.UserNotExistsException;
 
 import java.io.InputStreamReader;
 import java.util.Scanner;
@@ -45,10 +48,39 @@ public class ConsoleAuthenticationUI implements UserInterface {
     }
 
     private void runSignUpUI() {
-        System.out.println("You entered Sign Up Interface");
+        System.out.println("SIGN UP");
+        System.out.println("Enter the login you want:");
+        try (Scanner scanner = new Scanner(new InputStreamReader(System.in))) {
+            String login = scanner.nextLine();
+            while (authenticationSystem.userExists(login)) {
+                System.out.println("User with this login already exists. Enter other login:");
+                login = scanner.nextLine();
+            }
+            String password;
+            System.out.println("Enter the password:");
+            password = scanner.nextLine();
+            try {
+                authenticationSystem.signUp(login, password);
+            } catch (UserAlreadyExistsException e) {
+                System.out.println("Sorry, while you were entering password another user with your login signed up");
+                runSignUpUI();
+            }
+        }
     }
 
     private void runLogInUI() {
-        System.out.println("You entered Log In Interface");
+        System.out.println("LOG IN");
+        try (Scanner scanner = new Scanner(new InputStreamReader(System.in))) {
+            System.out.println("Enter your login:");
+            String login = scanner.nextLine();
+            System.out.println("Enter the password:");
+            String password = scanner.nextLine();
+            try {
+                authenticationSystem.logIn(login, password);
+            } catch (UserNotExistsException | InvalidPasswordException e) {
+                System.out.println("Sorry, incorrect login or password. Try again.");
+                runLogInUI();
+            }
+        }
     }
 }
