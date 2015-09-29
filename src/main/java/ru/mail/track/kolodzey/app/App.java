@@ -14,9 +14,10 @@ import java.util.Map;
 public class App 
 {
     public static void main( String[] args ) {
+        UserFactory userFactory = new UserFactoryImpl();
         Map<String, User> userMap = new HashMap<>();
-        userMap.put("daria", new UserImpl("daria", "111"));
-        UserDB userDB = new UserDBImpl(userMap, new UserFactoryImpl());
+        userMap.put("daria", userFactory.createUser("daria", "111"));
+        UserDB userDB = new UserDBImpl(userMap, userFactory);
         UserInterface ui = new ConsoleAuthenticationUI(new AuthenticationSystemImpl(userDB));
         ui.run();
     }
