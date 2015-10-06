@@ -41,10 +41,10 @@ public class UserStoreImpl implements UserStore {
     }
 
     @Override
-    public User addUser(String login, String password) throws UserAlreadyExistsException {
+    public void addUser(String login, String password) throws UserAlreadyExistsException {
         if (isUserExist(login))
             throw new UserAlreadyExistsException();
-        return userMap.put(login, new UserImpl(login, password));
+        userMap.put(login, new UserImpl(login, password));
     }
 
     @Override

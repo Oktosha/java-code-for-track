@@ -12,6 +12,8 @@ import java.util.Scanner;
  */
 public class ConsoleAuthUI implements AuthUI {
     UserStore userStore;
+    Scanner scanner = null;
+
     public ConsoleAuthUI(UserStore userStore) {
         this.userStore = userStore;
     }
@@ -19,60 +21,68 @@ public class ConsoleAuthUI implements AuthUI {
     @Override
     public User loadUser() {
         System.out.println("Welcome to HelloWorld 2.0!");
-        return runChooseOptionsUI();
+        try (Scanner scanner = new Scanner(new InputStreamReader(System.in))) {
+            this.scanner = scanner;
+            return runChooseOptionsUI();
+        }
     }
 
     private User runChooseOptionsUI() {
-        for (;;) {
+        User user = null;
+        while(user == null) {
             System.out.println("Enter «1» to log in");
             System.out.println("Enter «0» to sign up");
             System.out.println("Enter «q» to quit");
-            try (Scanner scanner = new Scanner(new InputStreamReader(System.in))) {
-                String ans = scanner.nextLine();
-                switch (ans) {
-                    case "1":
-                        return runLogInUI();
-                    case "2":
-                        return runSignUpUI();
-                    case "q":
-                        return null;
-                    default:
-                        System.out.println("We don't understand you.");
-                        System.out.println("Reenter what you want, please.");
-                }
+            String ans = scanner.nextLine();
+            switch (ans) {
+                case "1":
+                    user = runLogInUI();
+                    break;
+                case "0":
+                    user = runSignUpUI();
+                    break;
+                case "q":
+                    return null;
+                default:
+                    System.out.println("We don't understand you.");
+                    System.out.println("Reenter what you want, please.");
             }
         }
+        return user;
     }
 
     private User runSignUpUI() {
         System.out.println("SIGN UP");
         System.out.println("Enter the login you want:");
-        try (Scanner scanner = new Scanner(new InputStreamReader(System.in))) {
-            String login = scanner.nextLine();
-            while (userStore.isUserExist(login)) {
-                System.out.println("User with this login already exists. Enter other login:");
-                login = scanner.nextLine();
-            }
-            String password;
-            System.out.println("Enter the password:");
-            password = scanner.nextLine();
-            try {
-                return userStore.addUser(login, password);
-            } catch (UserAlreadyExistsException e) {
-                System.out.println("Sorry, while you were entering password another user with your login signed up");
-                return runChooseOptionsUI();
-            }
+
+        String login = scanner.nextLine();
+        while (userStore.isUserExist(login)) {
+            System.out.println("User with this login already exists. Enter other login:");
+            login = scanner.nextLine();
         }
+        String password;
+        System.out.println("Enter the password:");
+        password = scanner.nextLine();
+        try {
+            userStore.addUser(login, password);
+            return userStore.getUser(login, password);
+        } catch (UserAlreadyExistsException e) {
+            System.out.println("Sorry, while you were entering password another user with your login signed up");
+            return null;
+        }
+
     }
 
     private User runLogInUI() {
         System.out.println("LOG IN");
-        try (Scanner scanner = new Scanner(new InputStreamReader(System.in))) {
-            System.out.println("Enter your login:");
-            String login = scanner.nextLine();
-            System.out.println("Enter the password:");
-            String password = scanner.nextLine();
-            return userStore.getUser(login, password);
+        System.out.println("Enter your login:");
+        String login = scanner.nextLine();
+        System.out.println("Enter the password:");
+        String password = scanner.nextLine();
+        User user = userStore.getUser(login, password);
+        if (user == null) {
+            System.out.println("Sorry, login or password is incorrect");
         }
+        return user;
     }
 }
