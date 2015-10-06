@@ -1,9 +1,8 @@
 package ru.mail.track.kolodzey.app.ui;
 
-import ru.mail.track.kolodzey.app.auth.AuthenticationSystem;
-import ru.mail.track.kolodzey.app.auth.InvalidPasswordException;
+import ru.mail.track.kolodzey.app.auth.User;
 import ru.mail.track.kolodzey.app.auth.UserAlreadyExistsException;
-import ru.mail.track.kolodzey.app.auth.UserNotExistsException;
+import ru.mail.track.kolodzey.app.auth.UserStore;
 
 import java.io.InputStreamReader;
 import java.util.Scanner;
@@ -11,19 +10,19 @@ import java.util.Scanner;
 /**
  * Created by DKolodzey on 29.09.15.
  */
-public class ConsoleAuthenticationUI implements UserInterface {
-    AuthenticationSystem authenticationSystem;
-    public ConsoleAuthenticationUI(AuthenticationSystem authenticationSystem) {
-        this.authenticationSystem = authenticationSystem;
+public class ConsoleAuthUI implements AuthUI {
+    UserStore userStore;
+    public ConsoleAuthUI(UserStore userStore) {
+        this.userStore = userStore;
     }
 
     @Override
-    public void run() {
+    public User loadUser() {
         System.out.println("Welcome to HelloWorld 2.0!");
-        runChooseOptionsUI();
+        return runChooseOptionsUI();
     }
 
-    private void runChooseOptionsUI() {
+    private User runChooseOptionsUI() {
         for (;;) {
             System.out.println("Enter «1» to log in");
             System.out.println("Enter «0» to sign up");
@@ -32,13 +31,11 @@ public class ConsoleAuthenticationUI implements UserInterface {
                 String ans = scanner.nextLine();
                 switch (ans) {
                     case "1":
-                        runLogInUI();
-                        return;
+                        return runLogInUI();
                     case "2":
-                        runSignUpUI();
-                        return;
+                        return runSignUpUI();
                     case "q":
-                        return;
+                        return null;
                     default:
                         System.out.println("We don't understand you.");
                         System.out.println("Reenter what you want, please.");
@@ -47,12 +44,12 @@ public class ConsoleAuthenticationUI implements UserInterface {
         }
     }
 
-    private void runSignUpUI() {
+    private User runSignUpUI() {
         System.out.println("SIGN UP");
         System.out.println("Enter the login you want:");
         try (Scanner scanner = new Scanner(new InputStreamReader(System.in))) {
             String login = scanner.nextLine();
-            while (authenticationSystem.userExists(login)) {
+            while (userStore.isUserExist(login)) {
                 System.out.println("User with this login already exists. Enter other login:");
                 login = scanner.nextLine();
             }
@@ -60,27 +57,22 @@ public class ConsoleAuthenticationUI implements UserInterface {
             System.out.println("Enter the password:");
             password = scanner.nextLine();
             try {
-                authenticationSystem.signUp(login, password);
+                return userStore.addUser(login, password);
             } catch (UserAlreadyExistsException e) {
                 System.out.println("Sorry, while you were entering password another user with your login signed up");
-                runSignUpUI();
+                return runChooseOptionsUI();
             }
         }
     }
 
-    private void runLogInUI() {
+    private User runLogInUI() {
         System.out.println("LOG IN");
         try (Scanner scanner = new Scanner(new InputStreamReader(System.in))) {
             System.out.println("Enter your login:");
             String login = scanner.nextLine();
             System.out.println("Enter the password:");
             String password = scanner.nextLine();
-            try {
-                authenticationSystem.logIn(login, password);
-            } catch (UserNotExistsException | InvalidPasswordException e) {
-                System.out.println("Sorry, incorrect login or password. Try again.");
-                runLogInUI();
-            }
+            return userStore.getUser(login, password);
         }
     }
 }
