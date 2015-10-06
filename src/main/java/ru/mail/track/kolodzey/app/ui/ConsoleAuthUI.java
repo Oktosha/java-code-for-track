@@ -4,6 +4,7 @@ import ru.mail.track.kolodzey.app.auth.User;
 import ru.mail.track.kolodzey.app.auth.UserAlreadyExistsException;
 import ru.mail.track.kolodzey.app.auth.UserStore;
 
+import java.io.Console;
 import java.io.InputStreamReader;
 import java.util.Scanner;
 
@@ -13,6 +14,7 @@ import java.util.Scanner;
 public class ConsoleAuthUI implements AuthUI {
     UserStore userStore;
     Scanner scanner = null;
+    Console console = System.console();
 
     public ConsoleAuthUI(UserStore userStore) {
         this.userStore = userStore;
@@ -60,9 +62,8 @@ public class ConsoleAuthUI implements AuthUI {
             System.out.println("User with this login already exists. Enter other login:");
             login = scanner.nextLine();
         }
-        String password;
         System.out.println("Enter the password:");
-        password = scanner.nextLine();
+        String password = String.copyValueOf(console.readPassword());
         try {
             userStore.addUser(login, password);
             return userStore.getUser(login, password);
@@ -78,7 +79,7 @@ public class ConsoleAuthUI implements AuthUI {
         System.out.println("Enter your login:");
         String login = scanner.nextLine();
         System.out.println("Enter the password:");
-        String password = scanner.nextLine();
+        String password = String.copyValueOf(console.readPassword());
         User user = userStore.getUser(login, password);
         if (user == null) {
             System.out.println("Sorry, login or password is incorrect");
