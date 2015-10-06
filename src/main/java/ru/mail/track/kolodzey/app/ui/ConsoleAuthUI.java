@@ -5,6 +5,7 @@ import ru.mail.track.kolodzey.app.auth.UserAlreadyExistsException;
 import ru.mail.track.kolodzey.app.auth.UserStore;
 
 import java.io.Console;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Scanner;
 
@@ -69,8 +70,10 @@ public class ConsoleAuthUI {
         } catch (UserAlreadyExistsException e) {
             System.out.println("Sorry, while you were entering password another user with your login signed up");
             return null;
+        } catch (IOException e) {
+            System.out.println("Unable to save user to database");
+            return null;
         }
-
     }
 
     private String getPassword() {

@@ -79,10 +79,14 @@ public class UserStoreImpl implements UserStore {
     }
 
     @Override
-    public void addUser(String login, String password) throws UserAlreadyExistsException {
+    public void addUser(String login, String password) throws UserAlreadyExistsException, IOException {
         if (isUserExist(login))
             throw new UserAlreadyExistsException();
         userMap.put(login, new UserImpl(login, password));
+        try (PrintWriter out = new PrintWriter(Files.newOutputStream(path,
+                StandardOpenOption.CREATE, StandardOpenOption.APPEND))) {
+            out.println(getUser(login, password).toString());
+        }
     }
 
     @Override
@@ -92,10 +96,5 @@ public class UserStoreImpl implements UserStore {
 
     @Override
     public void close() throws IOException {
-        try (PrintWriter out = new PrintWriter(Files.newOutputStream(path, StandardOpenOption.CREATE))) {
-            for (UserImpl user : userMap.values()) {
-                out.println(user.toString());
-            }
-        }
     }
 }
