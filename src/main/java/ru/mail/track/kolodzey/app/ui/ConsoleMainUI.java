@@ -14,6 +14,15 @@ public class ConsoleMainUI implements MainUI {
 
     @Override
     public void run() {
+        System.out.println("Loading..");
+        for (int i = 20; i <= 100; i += 20) {
+            System.out.println(i + "%");
+            try {
+                Thread.sleep(500);
+            } catch (Exception e) {
+                /* Ignore */
+            }
+        }
         System.out.println("Hello, " + user.getLogin() + "!");
     }
 }
