@@ -11,7 +11,7 @@ import java.util.Scanner;
 /**
  * Created by DKolodzey on 29.09.15.
  */
-public class ConsoleAuthUI implements AuthUI {
+public class ConsoleAuthUI {
     UserStore userStore;
     Scanner scanner = null;
     Console console = System.console();
@@ -20,7 +20,6 @@ public class ConsoleAuthUI implements AuthUI {
         this.userStore = userStore;
     }
 
-    @Override
     public User loadUser() {
         System.out.println("Welcome to HelloWorld 2.0!");
         try (Scanner scanner = new Scanner(new InputStreamReader(System.in))) {
