@@ -63,7 +63,7 @@ public class ConsoleAuthUI implements AuthUI {
             login = scanner.nextLine();
         }
         System.out.println("Enter the password:");
-        String password = String.copyValueOf(console.readPassword());
+        String password = getPassword();
         try {
             userStore.addUser(login, password);
             return userStore.getUser(login, password);
@@ -74,12 +74,19 @@ public class ConsoleAuthUI implements AuthUI {
 
     }
 
+    private String getPassword() {
+        if (console != null) {
+            return String.copyValueOf(console.readPassword());
+        } else {
+            return scanner.nextLine();
+        }
+    }
     private User runLogInUI() {
         System.out.println("LOG IN");
         System.out.println("Enter your login:");
         String login = scanner.nextLine();
         System.out.println("Enter the password:");
-        String password = String.copyValueOf(console.readPassword());
+        String password = getPassword();
         User user = userStore.getUser(login, password);
         if (user == null) {
             System.out.println("Sorry, login or password is incorrect");
