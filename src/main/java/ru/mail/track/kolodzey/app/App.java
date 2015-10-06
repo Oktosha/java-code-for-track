@@ -7,6 +7,7 @@ import ru.mail.track.kolodzey.app.ui.ConsoleMainUI;
 import ru.mail.track.kolodzey.app.ui.MainUI;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,7 +18,7 @@ import java.util.Map;
 public class App 
 {
     public static void main( String[] args ) throws IOException {
-        try (UserStore userStore = new UserStoreImpl()) {
+        try (UserStore userStore = new UserStoreImpl(Paths.get("data.txt"))) {
             AuthUI authUI = new ConsoleAuthUI(userStore);
             User user = authUI.loadUser();
             if (user != null) {
