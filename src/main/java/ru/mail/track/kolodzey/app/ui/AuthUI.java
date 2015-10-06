@@ -1,5 +1,6 @@
 package ru.mail.track.kolodzey.app.ui;
 
+import com.sun.istack.internal.Nullable;
 import ru.mail.track.kolodzey.app.auth.User;
 
 /**
@@ -7,5 +8,6 @@ import ru.mail.track.kolodzey.app.auth.User;
  */
 
 public interface AuthUI {
+    @Nullable
     public User loadUser();
 }
