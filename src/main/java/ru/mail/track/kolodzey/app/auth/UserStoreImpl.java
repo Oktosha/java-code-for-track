@@ -1,12 +1,13 @@
 package ru.mail.track.kolodzey.app.auth;
 
-import java.io.BufferedOutputStream;
+import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -17,20 +18,28 @@ import java.util.Scanner;
 public class UserStoreImpl implements UserStore {
     private Map<String, UserImpl> userMap;
     private Path path;
+    private MessageDigest messageDigest;
+    private HexBinaryAdapter adapter = new HexBinaryAdapter();
+
+    private byte[] getHash(String password) {
+        messageDigest.reset();
+        return messageDigest.digest(password.getBytes());
+
+    }
 
     private class UserImpl implements User {
+
         private String login;
-        private String password;
+        private byte[] passwordHash;
 
         UserImpl(String login, String password) {
             this.login = login;
-            this.password = password;
+            this.passwordHash = getHash(password);
         }
 
         UserImpl(String serializedUser) {
-            String[] data = serializedUser.split(" ");
-            login = data[0];
-            password = data[1];
+            this.login = serializedUser.split(" ")[0];
+            this.passwordHash = adapter.unmarshal(serializedUser.split(" ")[1]);
         }
 
         @Override
@@ -40,22 +49,25 @@ public class UserStoreImpl implements UserStore {
 
         @Override
         public boolean passwordIsCorrect(String password) {
-            return this.password.equals(password);
+            return MessageDigest.isEqual(this.passwordHash, (getHash(password)));
         }
 
         public String toString() {
-            return login + " " + password;
+            return login + " " + adapter.marshal(passwordHash);
         }
     }
 
-    public UserStoreImpl(Path path) throws IOException{
+    public UserStoreImpl(Path path) throws IOException, NoSuchAlgorithmException {
         this.path = path;
         this.userMap = new HashMap<>();
-        try (Scanner scanner = new Scanner(Files.newInputStream(path, StandardOpenOption.CREATE))) {
-            while (scanner.hasNextLine()) {
-                String serializedUser = scanner.nextLine();
-                UserImpl user = new UserImpl(serializedUser);
-                userMap.put(user.getLogin(), user);
+        this.messageDigest = MessageDigest.getInstance("MD5");
+        if (Files.exists(path)) {
+            try (Scanner scanner = new Scanner(Files.newInputStream(path, StandardOpenOption.CREATE))) {
+                while (scanner.hasNextLine()) {
+                    String serializedUser = scanner.nextLine();
+                    UserImpl user = new UserImpl(serializedUser);
+                    userMap.put(user.getLogin(), user);
+                }
             }
         }
     }
