@@ -22,7 +22,7 @@ public class ConsoleAuthUI {
     }
 
     public User loadUser() {
-        System.out.println("Welcome to HelloWorld 2.0!");
+        System.out.println("Welcome to Chatter!");
         try (Scanner scanner = new Scanner(new InputStreamReader(System.in))) {
             this.scanner = scanner;
             return runChooseOptionsUI();

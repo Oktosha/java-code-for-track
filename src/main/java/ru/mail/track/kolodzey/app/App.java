@@ -4,7 +4,7 @@ import ru.mail.track.kolodzey.app.auth.User;
 import ru.mail.track.kolodzey.app.auth.UserStore;
 import ru.mail.track.kolodzey.app.auth.UserStoreImpl;
 import ru.mail.track.kolodzey.app.ui.ConsoleAuthUI;
-import ru.mail.track.kolodzey.app.ui.ConsoleMainUI;
+import ru.mail.track.kolodzey.app.ui.ChatUI;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -21,8 +21,8 @@ public class App
             ConsoleAuthUI authUI = new ConsoleAuthUI(userStore);
             User user = authUI.loadUser();
             if (user != null) {
-                ConsoleMainUI mainUI = new ConsoleMainUI(user);
-                mainUI.run();
+                ChatUI chatUI = new ChatUI(user);
+                chatUI.run();
             }
         }
     }
